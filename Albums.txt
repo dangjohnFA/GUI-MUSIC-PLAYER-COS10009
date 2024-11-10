@@ -1,0 +1,16 @@
+0|Photograph|Tracks/Photograph.mp3
+0|Perfect|Tracks/Perfect.mp3
+0|Thinking Out Loud|Tracks/ThinkingOutLoud.mp3
+0|Shape Of You|Tracks/ShapeOfYou.mp3
+1|Destination|Tracks/Destination.mp3
+1|Lucky|Tracks/Lucky.mp3
+1|Give Me A Kiss|Tracks/GiveMeAKiss.mp3
+1|Too Hot To Touch|Tracks/TooHotToTouch.mp3
+2|Faded|Tracks/Faded.mp3
+2|The Spectre|Tracks/TheSpectre.mp3
+2|Lily|Tracks/Lily.mp3
+2|Alone|Tracks/Alone.mp3
+3|Senbonzakura|Tracks/Senbonzakura.mp3
+3|Hazy Moon|Tracks/HazyMoon.mp3
+3|Yume To Hazakura|Tracks/YumeToHazakura.mp3
+3|Ievan Polkka|Tracks/IevanPolkka.mp3
