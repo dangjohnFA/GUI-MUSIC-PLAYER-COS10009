@@ -14,3 +14,57 @@
 3|Hazy Moon|Tracks/HazyMoon.mp3
 3|Yume To Hazakura|Tracks/YumeToHazakura.mp3
 3|Ievan Polkka|Tracks/IevanPolkka.mp3
+
+## 4 albums
+
+#+-=:x
+#Ed Sheeran
+#images/Ed Sheeran.jpg
+# 4 tracks
+#Photograph
+#Tracks/Photograph.mp3
+#Perfect
+#Tracks/Perfect.mp3
+#Thinking Out Loud
+#Tracks/ThinkingOutLoud.mp3
+#Shape Of You
+#Tracks/ShapeOfYou.mp3
+
+#Too Hot To Touch
+#Crash Adams
+#images/Crash Adams.jpg
+# 4 tracks
+#Destination
+#Tracks/Destination.mp3
+#Lucky
+#Tracks/Lucky.mp3
+#Give Me A Kiss
+#Tracks/GiveMeAKiss.mp3
+#Too Hot To Touch
+#Tracks/TooHotToTouch.mp3
+
+#Who Am I
+#Alan Walker
+#images/Alan Walker.jpg
+# 4 tracks
+#Faded
+#Tracks/Faded.mp3
+#The Spectre
+#Tracks/TheSpectre.mp3
+#Lily
+#Tracks/Lily.mp3
+#Alone
+#Tracks/Alone.mp3
+
+#Miku
+#Hatsune Miku
+#images/Hatsune Miku.jpg
+# 4 tracks
+#Senbonzakura
+#Tracks/Senbonzakura.mp3
+#Hazy Moon
+#Tracks/HazyMoon.mp3
+#Yume To Hazakura
+#Tracks/YumeToHazakura.mp3
+#Ievan Polkka
+#Tracks/IevanPolkka.mp3
