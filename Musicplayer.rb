@@ -52,9 +52,12 @@ class MusicPlayerWindow < Gosu::Window
   @backward_btn_hover = Gosu::Image.new("elements/Backward_Hover.png")
   @forward_btn = Gosu::Image.new("elements/Forward.png")
   @forward_btn_hover = Gosu::Image.new("elements/Forward_Hover.png")
+  @loop_btn = Gosu::Image.new("elements/Loop.png")
+  @random_btn = Gosu::Image.new("elements/random.png")
 
-
-
+  @looping = false  # Add a flag to track the loop state
+  @loop_btn_active = false  # Add a flag to track the loop button state
+  
   # Music player state
   @current_song = nil
   @current_song_index = 0  # Track the current song index
@@ -136,6 +139,18 @@ end
           forward_width = @forward_btn.width * 3
           forward_height = @forward_btn.height * 3
   
+          # Define the exact coordinates and dimensions for the loop button
+          loop_x = play_x + (play_width - @loop_btn.width * 0.25) / 2  # Center the loop button under the play button
+          loop_y = play_y + play_height + element_spacing  # Place it right under the play button
+          loop_width = @loop_btn.width * 0.25  # Scale down the loop button to 0.25
+          loop_height = @loop_btn.height * 0.25
+
+          # Define the exact coordinates and dimensions for the random button
+          random_x = pause_x + (pause_width - @loop_btn.width * 0.25) / 2  # Align with the pause button
+          random_y = pause_y + pause_height + element_spacing  # Place it right under the pause button
+          random_width = @loop_btn.width * 0.25  # Scale down the random button to 0.25
+          random_height = @loop_btn.height * 0.25
+  
           # Check if the play button is clicked
           if mouse_over?(play_x, play_y, play_width, play_height)
             if !@playing && @current_song
@@ -181,27 +196,29 @@ end
               puts "Playing next song: #{@selected_album[:songs][@current_song_index]}"
             end
           end
+  
+          # Check if the loop button is clicked
+          if mouse_over?(loop_x, loop_y, loop_width, loop_height)
+            @loop_enabled = !@loop_enabled  # Toggle the loop state
+            update_loop_button_state
+          end
+
+          # Check if the random button is clicked
+          if mouse_over?(random_x, random_y, random_width, random_height)
+            play_random_song
+          end
         end
       end
     end
   end
+
 
   def button_up(id)
     if id == Gosu::MS_LEFT
       # Reset any flags or states if needed
     end
   end
-
- 
-  def update_slider_position
-    if @current_song_instance
-      song_length = @current_song_instance.length
-      current_time = @current_song_instance.position
-      @slider_position = (current_time / song_length.to_f) * @slider_background.width * 3
-    end
-  end
-
-  def draw
+   def draw
     if @current_view == :main_menu
       draw_main_menu
     elsif @current_view == :album_view
@@ -251,11 +268,12 @@ end
       @selected_album[:image].draw(album_image_x, album_image_y, 1, @album_width.to_f / @selected_album[:image].width * 1.5, @album_height.to_f / @selected_album[:image].height * 1.5)
       
       artist_y = album_image_y - 100
-      @album_font.draw_text(@selected_album[:artist], (width - @album_font.text_width(@selected_album[:artist])) / 2, artist_y, 1, 1.0, 1.0, Gosu::Color::YELLOW)
+      @album_font.draw_text(@selected_album[:artist], (width - @album_font.text_width(@selected_album[:artist])) / 2, artist_y, 1, 1.0, 1.0, Gosu::Color::RED)
       
       track_box_x = (width - @track_box_image.width * 3) / 2
       track_box_y = (height / 2) + @album_height / 2 - 150
-      @track_box_image.draw(track_box_x, track_box_y, 1, 3, 3)
+      track_box_height = @track_box_image.height * 3 + 350  # Decrease the height of the track box to cover the buttons below it
+      @track_box_image.draw(track_box_x, track_box_y, 1, 3, track_box_height.to_f / @track_box_image.height)
       
       track_box_title_y = track_box_y + 20
       @album_font.draw_text(@selected_album[:title], (width - @album_font.text_width(@selected_album[:title])) / 2, track_box_title_y, 1, 1.0, 1.0, Gosu::Color::CYAN)
@@ -272,7 +290,13 @@ end
       element_spacing = 40  # Increase spacing for better visual arrangement
       total_width = @backward_btn.width * 3 + @play_btn.width * 3 + @pause_btn.width * 3 + @forward_btn.width * 3 + element_spacing * 3
       start_x = (width - total_width) / 2
-
+  
+      # Define the exact coordinates and dimensions for the play button
+      play_x = (width - @play_btn.width * 3) / 2 - 50  # Move 50 pixels to the left
+      play_y = controls_y
+      play_width = @play_btn.width * 3
+      play_height = @play_btn.height * 3
+  
       # Draw backward button
       if mouse_over?(start_x, controls_y, @backward_btn.width * 3, @backward_btn.height * 3)
         @backward_btn_hover.draw(start_x, controls_y, 1, 3, 3)
@@ -290,30 +314,92 @@ end
   
       # Draw pause button
       pause_x = play_x + @play_btn.width * 3 + element_spacing
-      if mouse_over?(pause_x, controls_y, @pause_btn.width * 3, @pause_btn.height * 3)
-        @pause_btn_hover.draw(pause_x, controls_y, 1, 3, 3)
+      pause_y = controls_y  # Define pause_y
+      pause_width = @pause_btn.width * 3
+      pause_height = @pause_btn.height * 3
+      if mouse_over?(pause_x, pause_y, pause_width, pause_height)
+        @pause_btn_hover.draw(pause_x, pause_y, 1, 3, 3)
       else
-        @pause_btn.draw(pause_x, controls_y, 1, 3, 3)
+        @pause_btn.draw(pause_x, pause_y, 1, 3, 3)
       end
   
       # Draw forward button
-      forward_x = pause_x + @pause_btn.width * 3 + element_spacing
+      forward_x = pause_x + pause_width + element_spacing
       if mouse_over?(forward_x, controls_y, @forward_btn.width * 3, @forward_btn.height * 3)
         @forward_btn_hover.draw(forward_x, controls_y, 1, 3, 3)
       else
         @forward_btn.draw(forward_x, controls_y, 1, 3, 3)
       end
-    end
   
-    if mouse_over?(home_button_x, home_button_y, @home_button_image.width * 7, @home_button_image.height * 7)
-      @home_button_image.draw(home_button_x, home_button_y, 1, 7, 7)
-      @button_font.draw_text("Back", back_text_x, back_text_y, 1, 1.0, 1.0, Gosu::Color::WHITE)
+      # Draw loop button
+      loop_x = play_x + (play_width - @loop_btn.width * 0.25) / 2
+      loop_y = play_y + play_height + element_spacing  # Place it right under the play button
+      @loop_btn.draw(loop_x, loop_y, 1, 0.25, 0.25)  # Scale down the loop button to 0.25
+      if @loop_enabled
+        draw_border(loop_x, loop_y, @loop_btn.width * 0.25, @loop_btn.height * 0.25, Gosu::Color::CYAN)
+      end
+  
+      # Draw random button
+      random_x = pause_x + (pause_width - @random_btn.width * 0.5) / 2
+      random_y = pause_y + pause_height + element_spacing  # Place it right under the pause button
+      if mouse_over?(random_x, random_y, @random_btn.width * 0.5, @random_btn.height * 0.5)
+        @random_btn.draw(random_x, random_y, 1, 0.5, 0.5)
+      else
+        @random_btn.draw(random_x, random_y, 1, 0.5, 0.5)
+      end
+  
+      # Draw home button
+      if mouse_over?(home_button_x, home_button_y, @home_button_image.width * 7, @home_button_image.height * 7)
+        @home_button_image.draw(home_button_x, home_button_y, 1, 7, 7)
+        @button_font.draw_text("Back", back_text_x, back_text_y, 1, 1.0, 1.0, Gosu::Color::WHITE)
+      else
+        @home_button_hover_image.draw(home_button_x, home_button_y, 1, 7, 7)
+        @button_font.draw_text("Back", back_text_x, back_text_y, 1, 1.0, 1.0, Gosu::Color::CYAN)
+      end
+    end
+  end
+  def draw_border(x, y, width, height, color)
+    draw_line(x, y, color, x + width, y, color, 2)
+    draw_line(x, y, color, x, y + height, color, 2)
+    draw_line(x + width, y, color, x + width, y + height, color, 2)
+    draw_line(x, y + height, color, x + width, y + height, color, 2)
+  end 
+  def update_loop_button_state
+    if @loop_enabled
+      start_song_looping if @current_song
     else
-      @home_button_hover_image.draw(home_button_x, home_button_y, 1, 7, 7)
-      @button_font.draw_text("Back", back_text_x, back_text_y, 1, 1.0, 1.0, Gosu::Color::CYAN)
+      stop_song_looping if @current_song
     end
-  end  
+  end
+
+  def start_song_looping
+    # Set up the song to loop
+    @current_song.play(true)
+  end
   
+  def stop_song_looping
+    # Stop the song from looping
+    @current_song.play(false)
+  end
+
+  def update
+    super
+    check_song_finished if @playing && @loop_enabled
+  end
+
+  def check_song_finished
+    if @current_song && !@current_song.playing?
+      @current_song.play(true)
+    end
+  end
+  def play_random_song
+    random_index = rand(@selected_album[:songs].size)
+    @current_song_index = random_index
+    @current_song = Gosu::Song.new(@selected_album[:song_paths][random_index])
+    @current_song.play
+    @playing = true
+    puts "Playing random song: #{@selected_album[:songs][random_index]}"
+  end
   def home_button_x
     0
   end
